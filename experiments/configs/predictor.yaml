@@ -1,0 +1,58 @@
+# Phase 2 predictor configuration. No hard-coded hyperparameters in
+# roar/predictor/*.py (CLAUDE.md rule 3) -- everything the LightGBM predictor
+# needs lives here.
+
+# Feature columns come straight from the leakage-safe table built by
+# roar/graph/features.py. `speed_mph` (the realized value at row t) is
+# deliberately NOT listed as a feature -- it is the training target itself,
+# so using it as an input would trivially leak the answer.
+feature_columns:
+  numeric:
+    - hist_mean_speed
+    - hist_var_speed
+    - hour_of_day
+    - day_of_week
+    - neighbor_congestion_proxy
+    - length_m
+    - lanes
+    - speed_limit_mph
+  categorical:
+    - road_class
+  boolean:
+    - is_holiday
+target: speed_mph
+
+# Quantiles trained via LightGBM's native quantile objective. `median_quantile`
+# is the point estimate used for eta(); `confidence_interval` is the pair
+# inverted (via the standard-normal quantile spacing) into a travel-time
+# sigma for eta_with_confidence() -- a real, per-edge uncertainty rather than
+# a constant.
+quantiles: [0.1, 0.25, 0.5, 0.75, 0.9]
+median_quantile: 0.5
+confidence_interval: [0.1, 0.9]
+
+lightgbm_params:
+  objective: quantile
+  num_leaves: 63
+  learning_rate: 0.05
+  min_data_in_leaf: 50
+  feature_fraction: 0.9
+  bagging_fraction: 0.8
+  bagging_freq: 5
+  verbosity: -1
+
+num_boost_round: 500
+early_stopping_rounds: 30
+
+# Physical floor: a predicted speed of 0 mph would make travel time
+# infinite. Matches roar/predictor/base.py's MIN_SPEED_MPH.
+min_speed_mph: 1.0
+
+seed: 42
+
+model_dir: results/models
+
+# Defaults for the NoisyPredictor / AdversarialPredictor wrappers used by the
+# smoothness and robustness sweeps in later phases.
+noisy_default_sigma_level: 0.2
+adversarial_default_budget: 0.3
