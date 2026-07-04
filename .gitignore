@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.DS_Store
+
+# data & artifacts are reproducible via `make data` / `make train` — do not commit
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+results/*
+!results/.gitkeep
+!results/figures/
+
+.pytest_cache/
+.ruff_cache/
+*.parquet
+*.pkl
+*.db
+
+# local Claude Code harness state
+.claude/

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "ROAR: Robust Learning-Augmented Routing on Real Road Networks"
+type: software
+version: 0.0.1
+date-released: 2026-07-04
+authors:
+  - name: "ROAR project contributors"
+license: MIT
+repository-code: "https://github.com/OWNER/roar"
+abstract: >
+  A deployable shortest-path router that uses an ML travel-time predictor as
+  advice but guarantees bounded worst-case degradation via a single tunable
+  trust parameter lambda, with a reproducible empirical study of the
+  consistency-robustness-smoothness curve on real road-network and traffic
+  data.

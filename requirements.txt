@@ -1,0 +1,38 @@
+# Pinned for reproducibility. Python 3.11 only.
+# Regenerate with: python3.11 -m pip install -r requirements.in --upgrade && pip freeze
+# (requirements.in is the human-edited source list; add packages there first.)
+
+# --- core numerics / data ---
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.0
+pyarrow==16.1.0
+
+# --- graph / geo ---
+networkx==3.3
+osmnx==1.9.3
+geopandas==0.14.4
+shapely==2.0.4
+
+# --- ML predictor ---
+lightgbm==4.3.0
+scikit-learn==1.5.0
+
+# --- stats ---
+statsmodels==0.14.2
+
+# --- api / demo ---
+fastapi==0.111.0
+uvicorn==0.30.1
+streamlit==1.35.0
+
+# --- config / experiment plumbing ---
+pyyaml==6.0.1
+pydantic==2.7.4
+
+# --- plotting ---
+matplotlib==3.9.0
+
+# --- dev / test / lint ---
+pytest==8.2.2
+ruff==0.4.10
