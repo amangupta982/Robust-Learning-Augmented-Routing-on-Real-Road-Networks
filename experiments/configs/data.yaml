@@ -1,0 +1,82 @@
+# Phase 1 data/graph pipeline configuration.
+# Every value the pipeline needs lives here — no hard-coded parameters in
+# roar/graph/*.py (CLAUDE.md rule 3).
+
+city: los-angeles-metr-la
+
+# Bounding box = the convex extent of the 207 METR-LA sensor locations
+# (computed from graph_sensor_locations.csv, see metr_la.sensor_locations_url
+# below) plus a ~0.01 deg (~1km) buffer so edge-of-network sensors still land
+# on a real drivable edge rather than falling off the downloaded graph.
+osm:
+  network_type: drive
+  bbox:
+    north: 34.2316
+    south: 34.0330
+    east: -118.1729
+    west: -118.5468
+  # sane per-highway-class default speeds (mph) used only when OSM's
+  # `maxspeed` tag is missing for an edge. Values follow typical US signed
+  # limits per functional class.
+  default_speed_mph:
+    motorway: 65
+    motorway_link: 45
+    trunk: 55
+    trunk_link: 40
+    primary: 45
+    primary_link: 35
+    secondary: 35
+    secondary_link: 30
+    tertiary: 30
+    tertiary_link: 25
+    unclassified: 25
+    residential: 25
+    living_street: 15
+    service: 15
+    default: 25 # fallback for any other/unlisted highway tag
+
+# METR-LA: 207 loop-detector sensors, LA highway network, 5-min speed
+# readings, 2012-03-01 00:00 - 2012-06-27 23:55 (real world dataset from the
+# DCRNN paper, Li et al. 2018). See data/README.md for provenance of these
+# exact URLs.
+metr_la:
+  sensor_locations_url: "https://raw.githubusercontent.com/liyaguang/DCRNN/master/data/sensor_graph/graph_sensor_locations.csv"
+  sensor_distances_url: "https://raw.githubusercontent.com/liyaguang/DCRNN/master/data/sensor_graph/distances_la_2012.csv"
+  speeds_url: "https://raw.githubusercontent.com/hazdzz/dcrnn_data/main/metr_la/vel_metr_la.csv"
+  raw_dir: data/raw
+
+time_bucket_minutes: 5
+
+sensor_matching:
+  # sensors whose nearest edge is farther than this are flagged as a bad
+  # match and dropped from the feature table (never silently kept).
+  max_match_distance_m: 200
+
+congestion_proxy:
+  # neighbor sensors within this real road-network distance (from
+  # sensor_distances_url) contribute to the upstream/downstream congestion
+  # proxy for an edge.
+  neighbor_radius_m: 3000
+  max_neighbors: 5
+
+# US holidays that fall inside the dataset's date range (2012-03-01 to
+# 2012-06-27). Hand-verified against the federal holiday calendar rather than
+# pulling in a dependency for a two-entry list.
+holidays:
+  - "2012-05-28" # Memorial Day
+
+# Chronological (whole-day) split — never a random split of time series
+# (CLAUDE.md rule 2). Boundaries chosen as a 70/10/20 split of the 119 days
+# covered by the dataset, rounded to whole days.
+split:
+  train:
+    start: "2012-03-01"
+    end: "2012-05-22"
+  val:
+    start: "2012-05-23"
+    end: "2012-06-03"
+  test:
+    start: "2012-06-04"
+    end: "2012-06-27"
+
+seed: 42
