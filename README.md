@@ -12,8 +12,9 @@ See [`ROAR_Research_Blueprint.md`](ROAR_Research_Blueprint.md) for the full
 research plan and [`CLAUDE.md`](CLAUDE.md) for the project's non-negotiable
 rules and component roadmap.
 
-> **Status:** project scaffold only. No routing, ML, or data-loading logic
-> has been implemented yet — see the roadmap in `CLAUDE.md`.
+> **Status:** Phase 1 (data & graph pipeline) and Phase 2 (pluggable
+> travel-time predictor) done. No routing logic yet — see the roadmap in
+> `CLAUDE.md`.
 
 ## Project layout
 
