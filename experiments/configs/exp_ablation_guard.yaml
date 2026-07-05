@@ -1,0 +1,26 @@
+# Ablation (a): guard on vs off. Both rows come from the SAME
+# RobustAStar.search() call per query (see roar/eval/harness.py's
+# _run_sweep_point -- the search never runs twice): "robust_astar" is the
+# guard-clamped result, "robust_astar_no_guard" reads
+# robustness_bound.candidate_cost, the ML-guided candidate's realized cost
+# BEFORE the guard's compare-and-fallback decision. Expected story: without
+# the guard, realized cost is unbounded under corruption; with it, capped
+# at (1 + alpha) * classical.
+
+experiment: ablation_guard
+run_id: ablation_guard
+seed: 4004
+
+alpha: 0.3
+lambda_base: 1.0
+lambda_mode: fixed
+
+methods:
+  - robust_astar
+  - robust_astar_no_guard
+
+sweep:
+  param: predictor
+  values:
+    - {type: adversarial, budget: 0.95}
+    - {type: noisy, sigma_level: 1.0, seed: 4004}

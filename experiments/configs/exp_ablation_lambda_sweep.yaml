@@ -1,0 +1,20 @@
+# Ablation (c): lambda sweep for the consistency-vs-robustness Pareto
+# front, with the REAL trained LightGBM predictor and fixed alpha. Phase 6
+# aggregates this table into the Pareto front figure (mean competitive
+# ratio = consistency proxy, worst-case ratio = robustness proxy, per
+# lambda_base) -- no plotting here, just the raw per-query rows.
+
+experiment: ablation_lambda_sweep
+run_id: ablation_lambda_sweep
+seed: 6006
+
+alpha: 0.3
+lambda_mode: fixed
+predictor: {type: lightgbm, model_version: latest}
+
+methods:
+  - robust_astar
+
+sweep:
+  param: lambda_base
+  values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]

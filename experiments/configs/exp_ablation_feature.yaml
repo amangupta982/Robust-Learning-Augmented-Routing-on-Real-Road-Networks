@@ -1,0 +1,25 @@
+# Ablation (d): feature ablation hook. `lightgbm_ablation` (see
+# roar/eval/metrics.py's build_predictor) trains a FRESH LightGBM model
+# with the listed features dropped from the feature table -- this is a
+# real retrain, not a simulated one, so this config is the expensive one in
+# the suite (~minutes per sweep point). Kept to two points by default
+# (full-feature baseline vs. dropping the neighbor-congestion proxy); add
+# more `lightgbm_ablation` entries here to study other features.
+
+experiment: ablation_feature
+run_id: ablation_feature
+seed: 7007
+
+alpha: 0.3
+lambda_base: 1.0
+lambda_mode: fixed
+
+methods:
+  - pure_ml_astar
+  - robust_astar
+
+sweep:
+  param: predictor
+  values:
+    - {type: lightgbm, model_version: latest}
+    - {type: lightgbm_ablation, excluded_features: [neighbor_congestion_proxy]}

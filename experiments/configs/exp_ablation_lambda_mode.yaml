@@ -1,0 +1,20 @@
+# Ablation (b): fixed vs confidence-modulated lambda, with the REAL trained
+# LightGBM predictor (its quantile-derived sigma is the only predictor in
+# this project with genuinely varying, non-trivial per-edge confidence --
+# OraclePredictor/AdversarialPredictor always report sigma=0, so this
+# ablation wouldn't be meaningful with either of them).
+
+experiment: ablation_lambda_mode
+run_id: ablation_lambda_mode
+seed: 5005
+
+alpha: 0.3
+lambda_base: 1.0
+predictor: {type: lightgbm, model_version: latest}
+
+methods:
+  - robust_astar
+
+sweep:
+  param: lambda_mode
+  values: [fixed, confidence_modulated]
