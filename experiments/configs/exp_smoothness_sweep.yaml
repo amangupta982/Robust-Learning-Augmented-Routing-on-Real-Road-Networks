@@ -1,0 +1,30 @@
+# Smoothness sweep: NoisyPredictor's relative sigma_level from 0 (perfect,
+# identical to the oracle) to high, on the SAME query set as every other
+# experiment (roar/eval/queries.py). This is the "money curve" precursor:
+# Phase 6 plots competitive ratio vs. sigma_level from this table to show
+# robust A* degrading smoothly and boundedly while pure_ml_astar does not.
+
+experiment: smoothness_sweep
+run_id: smoothness_sweep
+seed: 3003
+
+alpha: 0.3
+lambda_base: 1.0
+lambda_mode: fixed
+
+methods:
+  - dijkstra
+  - astar
+  - bidirectional_dijkstra
+  - pure_ml_astar
+  - robust_astar
+
+sweep:
+  param: predictor
+  values:
+    - {type: noisy, sigma_level: 0.0, seed: 3003}
+    - {type: noisy, sigma_level: 0.1, seed: 3003}
+    - {type: noisy, sigma_level: 0.2, seed: 3003}
+    - {type: noisy, sigma_level: 0.5, seed: 3003}
+    - {type: noisy, sigma_level: 1.0, seed: 3003}
+    - {type: noisy, sigma_level: 2.0, seed: 3003}
