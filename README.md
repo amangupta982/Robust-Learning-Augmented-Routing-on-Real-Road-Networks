@@ -13,9 +13,10 @@ research plan and [`CLAUDE.md`](CLAUDE.md) for the project's non-negotiable
 rules and component roadmap.
 
 > **Status:** Phase 1 (data & graph pipeline), Phase 2 (pluggable
-> travel-time predictor), and Phase 3 (classical + pure-ML-guided routing
-> baselines) done. No robustness guarantee yet — see the roadmap in
-> `CLAUDE.md`.
+> travel-time predictor), Phase 3 (classical + pure-ML-guided routing
+> baselines), and Phase 4 (RobustAStar + RobustnessGuard, the core
+> provable (1+α) degradation bound) done. No experiment harness/sweeps yet
+> — see the roadmap in `CLAUDE.md`.
 
 ## Project layout
 
