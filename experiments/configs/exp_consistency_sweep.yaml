@@ -1,0 +1,27 @@
+# Consistency sweep: predictor quality from perfect (oracle) through real
+# (trained LightGBM) to badly degraded (heavy synthetic noise), on the
+# SAME query set as every other experiment. Expected story: robust A*
+# should track the oracle-optimal cost closely when the predictor is good,
+# and degrade gracefully (never past the guard floor) as it worsens.
+
+experiment: consistency_sweep
+run_id: consistency_sweep
+seed: 1001
+
+alpha: 0.3
+lambda_base: 1.0
+lambda_mode: fixed
+
+methods:
+  - dijkstra
+  - astar
+  - bidirectional_dijkstra
+  - pure_ml_astar
+  - robust_astar
+
+sweep:
+  param: predictor
+  values:
+    - {type: oracle}
+    - {type: lightgbm, model_version: latest}
+    - {type: noisy, sigma_level: 1.0, seed: 1001} # "degraded": heavy synthetic noise
