@@ -1,0 +1,32 @@
+# Robustness sweep: AdversarialPredictor budget from 0 (no corruption,
+# identical to the oracle) to near-maximum (0.95 -- AdversarialPredictor
+# requires budget < 1, see roar/predictor/adversarial.py), on the SAME
+# query set as every other experiment. Expected story: pure_ml_astar's
+# realized cost degrades without bound as budget grows; robust_astar's
+# never exceeds (1 + alpha) * classical (see tests/test_robust_astar_robustness.py
+# for the same property verified directly, at this exact alpha).
+
+experiment: robustness_sweep
+run_id: robustness_sweep
+seed: 2002
+
+alpha: 0.3
+lambda_base: 1.0
+lambda_mode: fixed
+
+methods:
+  - dijkstra
+  - astar
+  - bidirectional_dijkstra
+  - pure_ml_astar
+  - robust_astar
+
+sweep:
+  param: predictor
+  values:
+    - {type: adversarial, budget: 0.0}
+    - {type: adversarial, budget: 0.2}
+    - {type: adversarial, budget: 0.4}
+    - {type: adversarial, budget: 0.6}
+    - {type: adversarial, budget: 0.8}
+    - {type: adversarial, budget: 0.95}
