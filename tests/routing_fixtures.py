@@ -99,13 +99,16 @@ class AlwaysMissingPredictor(TravelTimePredictor):
 
 
 class StubPredictor(TravelTimePredictor):
-    """Returns a fixed, hand-picked eta per edge_id regardless of
-    depart_time -- used to prove PureMLAStarBaseline trusts the predictor
-    directly (no clamping/robustness mechanism), by making it disagree with
-    the free-flow-cost shortest path."""
+    """Returns a fixed, hand-picked eta (and optional sigma) per edge_id
+    regardless of depart_time -- used to prove PureMLAStarBaseline trusts
+    the predictor directly (no clamping/robustness mechanism), and to drive
+    RobustAStar's confidence-modulated lambda with known sigma values."""
 
-    def __init__(self, eta_by_edge: dict[str, float]):
+    def __init__(
+        self, eta_by_edge: dict[str, float], sigma_by_edge: dict[str, float] | None = None
+    ):
         self._eta_by_edge = eta_by_edge
+        self._sigma_by_edge = sigma_by_edge or {}
 
     def eta(self, edge_id: str, depart_time: dt.datetime) -> float:
         if edge_id not in self._eta_by_edge:
@@ -113,7 +116,7 @@ class StubPredictor(TravelTimePredictor):
         return self._eta_by_edge[edge_id]
 
     def eta_with_confidence(self, edge_id: str, depart_time: dt.datetime) -> tuple[float, float]:
-        return self.eta(edge_id, depart_time), 0.0
+        return self.eta(edge_id, depart_time), self._sigma_by_edge.get(edge_id, 0.0)
 
 
 def recompute_path_cost(
