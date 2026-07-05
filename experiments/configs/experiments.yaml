@@ -1,0 +1,12 @@
+# The ordered list of experiment configs `make experiments`
+# (roar/eval/harness.py:main) runs, all against the SAME query set defined
+# in query_set.yaml. Paths are relative to experiments/configs/.
+
+experiments:
+  - exp_consistency_sweep.yaml
+  - exp_robustness_sweep.yaml
+  - exp_smoothness_sweep.yaml
+  - exp_ablation_guard.yaml
+  - exp_ablation_lambda_mode.yaml
+  - exp_ablation_lambda_sweep.yaml
+  - exp_ablation_feature.yaml

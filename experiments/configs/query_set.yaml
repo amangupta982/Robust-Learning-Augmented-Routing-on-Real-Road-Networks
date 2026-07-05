@@ -1,0 +1,34 @@
+# The stratified query set every experiment in experiments.yaml runs
+# against, once per seed in `seeds` (roar/eval/harness.py builds a fresh
+# query list per seed and reuses each one across every experiment for that
+# seed -- see roar/eval/queries.py). >=5 seeds per CLAUDE.md Phase 6's
+# "mean +/- 95% bootstrap CI ... over >=5 seeds" requirement: this gives
+# stats.py an independent resample (a different random query draw) per
+# seed, not just query-level bootstrap resampling within one draw.
+#
+# Runtime note: n_queries=80 x 5 seeds = 400 total queries per experiment
+# (not literally "thousands", per CLAUDE.md Phase 5) keeps a full
+# `make experiments` run to under an hour on a typical dev machine. Raise
+# n_queries and/or add more seeds for a full-scale paper run -- nothing
+# else needs to change.
+
+city: los-angeles-metr-la
+n_queries: 80
+seeds: [20120604, 20120605, 20120606, 20120607, 20120608]
+
+# Fraction of queries whose origin/dest are the SAME instrumented edge's
+# endpoints (short, guaranteed real-sensor-data exposure). The remainder
+# pair endpoints from two DIFFERENT instrumented edges (longer, multi-hop,
+# for distance-stratum diversity) -- kept a minority since these are the
+# expensive queries (RobustAStar's heuristic radius scales with distance).
+direct_fraction: 0.85
+
+distance_strata: [short, medium, long]
+
+# [start_hour, end_hour) buckets, in the depart_time's local hour-of-day.
+time_strata:
+  night: [0, 6]
+  morning_peak: [6, 10]
+  midday: [10, 16]
+  evening_peak: [16, 20]
+  evening: [20, 24]
