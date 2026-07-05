@@ -68,13 +68,20 @@ class RobustnessBound:
     """`ratio` is realized_cost / classical_cost for the path actually
     returned -- by construction this is always <= 1 + alpha (see `apply`).
     `guard_invoked` is True iff the ML-guided candidate was rejected and the
-    classical path was substituted."""
+    classical path was substituted.
+
+    `candidate_cost` is the ML-guided candidate's REALIZED cost regardless
+    of whether the guard accepted or rejected it -- exposed so a "guard on
+    vs off" ablation (Phase 5) can read what the ungated candidate would
+    have cost, without re-running the search a second time. It plays no
+    role in the guarantee itself (`realized_cost`/`ratio` do)."""
 
     alpha: float
     classical_cost: float
     realized_cost: float
     ratio: float
     guard_invoked: bool
+    candidate_cost: float
 
 
 def _safe_ratio(numerator: float, denominator: float) -> float:
@@ -153,26 +160,41 @@ class RobustnessGuard:
         classical_realized = path_realized_cost(
             self._graph, classical.path, self._ground_truth_cost_fn, depart_time
         )
+        candidate_realized = path_realized_cost(
+            self._graph, candidate.path, self._ground_truth_cost_fn, depart_time
+        )
 
         if classical.path is None:
             # No path exists even under a real, non-ML search -- there is
             # no safe path to fall back to, and no meaningful ratio.
             return None, RobustnessBound(
-                self._alpha, float("inf"), float("inf"), float("nan"), False
+                alpha=self._alpha,
+                classical_cost=float("inf"),
+                realized_cost=float("inf"),
+                ratio=float("nan"),
+                guard_invoked=False,
+                candidate_cost=candidate_realized,
             )
 
-        candidate_realized = path_realized_cost(
-            self._graph, candidate.path, self._ground_truth_cost_fn, depart_time
-        )
         bound_value = (1 + self._alpha) * classical_realized
 
         if candidate.path is not None and candidate_realized <= bound_value:
             ratio = _safe_ratio(candidate_realized, classical_realized)
             return candidate.path, RobustnessBound(
-                self._alpha, classical_realized, candidate_realized, ratio, False
+                alpha=self._alpha,
+                classical_cost=classical_realized,
+                realized_cost=candidate_realized,
+                ratio=ratio,
+                guard_invoked=False,
+                candidate_cost=candidate_realized,
             )
 
         ratio = _safe_ratio(classical_realized, classical_realized)
         return classical.path, RobustnessBound(
-            self._alpha, classical_realized, classical_realized, ratio, True
+            alpha=self._alpha,
+            classical_cost=classical_realized,
+            realized_cost=classical_realized,
+            ratio=ratio,
+            guard_invoked=True,
+            candidate_cost=candidate_realized,
         )
