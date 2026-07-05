@@ -98,6 +98,21 @@ def predictor_cost_fn(predictor: TravelTimePredictor) -> EdgeCostFn:
     return cost
 
 
+def classical_lower_bound_heuristic(graph: RoutingGraph, dest: str) -> Callable[[str], float]:
+    """h(n) = great_circle_distance(n, dest) / max_speed_mph -- the
+    admissible, consistent heuristic `astar()` uses by default (see its
+    docstring for the proof). Exposed as a standalone function so
+    `roar/routing/robust_astar.py` can reuse the exact same classical lower
+    bound as one term of its blended heuristic, rather than risking a second,
+    possibly-divergent copy of this logic."""
+    max_speed_mps = graph.max_speed_mph * MPH_TO_MPS
+
+    def h(node: str) -> float:
+        return haversine_m(graph.nodes[node], graph.nodes[dest]) / max_speed_mps
+
+    return h
+
+
 def _reconstruct_path(prev: dict[str, str], origin: str, dest: str) -> list[str]:
     path = [dest]
     while path[-1] != origin:
@@ -154,16 +169,20 @@ def astar(
     dest: str,
     depart_time: dt.datetime,
     cost_fn: EdgeCostFn,
+    heuristic: Callable[[str], float] | None = None,
 ) -> SearchResult:
-    """A* with heuristic h(n) = great_circle_distance(n, dest) / max_speed_mph
-    (the graph-wide max speed limit, converted to m/s).
+    """A* search. Default heuristic (used whenever `heuristic` is not
+    supplied): h(n) = great_circle_distance(n, dest) / max_speed_mph (the
+    graph-wide max speed limit, converted to m/s) -- see
+    `classical_lower_bound_heuristic`.
 
-    Admissibility: the driving-network shortest path between n and dest is
-    always >= their great-circle distance (a straight line is the shortest
-    path between two points; any real route can only be as long or longer).
-    Every edge's free-flow speed is <= max_speed_mph by construction
-    (max_speed_mph is defined as the max over all edges in the graph), so
-    the true minimum travel time from n to dest satisfies
+    Admissibility of the default heuristic: the driving-network shortest
+    path between n and dest is always >= their great-circle distance (a
+    straight line is the shortest path between two points; any real route
+    can only be as long or longer). Every edge's free-flow speed is <=
+    max_speed_mph by construction (max_speed_mph is defined as the max over
+    all edges in the graph), so the true minimum travel time from n to dest
+    satisfies
         true_time(n, dest) = sum(edge_length_i / edge_speed_i)
                            >= sum(edge_length_i) / max_speed_mph
                            >= great_circle(n, dest) / max_speed_mph
@@ -181,12 +200,17 @@ def astar(
     heuristic on a graph with non-negative edge weights never requires
     re-expanding an already-settled node (this is why `visited` below is a
     simple set, not a re-openable structure).
+
+    A caller-supplied `heuristic` (see roar/routing/robust_astar.py) need
+    NOT be admissible/consistent -- correctness of "return a valid path if
+    one exists, else None" never depends on the heuristic (the loop only
+    gives up when the heap empties, never based on h's value), only
+    *optimality* of the returned path does. An inadmissible heuristic can
+    make this function return a valid but suboptimal path; it can never
+    make it return a wrong/invalid one.
     """
     start_perf = time.perf_counter()
-    max_speed_mps = graph.max_speed_mph * MPH_TO_MPS
-
-    def h(node: str) -> float:
-        return haversine_m(graph.nodes[node], graph.nodes[dest]) / max_speed_mps
+    h = heuristic if heuristic is not None else classical_lower_bound_heuristic(graph, dest)
 
     g: dict[str, float] = {origin: 0.0}
     prev: dict[str, str] = {}
