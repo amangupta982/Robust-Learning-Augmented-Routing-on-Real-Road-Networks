@@ -77,6 +77,10 @@ class LightGBMPredictor(TravelTimePredictor):
         self._med_q = cfg["median_quantile"]
         self._z_span = norm.ppf(hi_q) - norm.ppf(lo_q)
 
+    @property
+    def time_bucket_minutes(self) -> int:
+        return self._cfg.get("time_bucket_minutes", 5)
+
     # ---- training ----
 
     @classmethod
@@ -177,6 +181,36 @@ class LightGBMPredictor(TravelTimePredictor):
         return {
             q: np.clip(booster.predict(X), floor, None) for q, booster in self._boosters.items()
         }
+
+    def predict_times_and_sigma(self, df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+        """Vectorized eta_with_confidence(): the same per-row math (median
+        quantile -> eta, (lo, hi) quantile spread -> sigma) as
+        eta_with_confidence(), computed for every row of `df` in ONE
+        batched call instead of one row at a time.
+
+        Added for the Improvement-Phase latency task: profiling
+        (see IMPROVEMENTS.md) found the per-query bottleneck in
+        `_predicted_times` was NOT LightGBM inference itself, but the
+        repeated pandas MultiIndex `.loc[]` lookup in `self._lookup` --
+        especially the ~99.8% of lookups that fail (KeyError, edges with
+        no sensor coverage), which pandas does not short-circuit cheaply.
+        `roar/predictor/materialized_lightgbm.py` uses this method to
+        precompute every instrumented edge's eta/sigma ONCE into a plain
+        dict at construction, replacing that slow pandas lookup with an
+        O(1) dict lookup at query time. This method changes no existing
+        behavior: `eta()`/`eta_with_confidence()` are untouched, and this
+        returns numerically identical values to calling
+        `eta_with_confidence()` row-by-row (proven in
+        tests/test_materialized_lightgbm.py)."""
+        speed_pred = self.predict_speed_quantiles(df)
+        length_m = df["length_m"].to_numpy(dtype=float)
+        time_pred = {q: travel_time_seconds(length_m, s) for q, s in speed_pred.items()}
+
+        eta = time_pred[self._med_q]
+        t_hi = time_pred[self._lo_q]  # low-speed quantile -> long travel time
+        t_lo = time_pred[self._hi_q]  # high-speed quantile -> short travel time
+        sigma = np.maximum(t_hi - t_lo, 0.0) / self._z_span
+        return eta, sigma
 
     def evaluate(self, df: pd.DataFrame) -> dict:
         """Honest quality report on a held-out slice (normally the temporal
