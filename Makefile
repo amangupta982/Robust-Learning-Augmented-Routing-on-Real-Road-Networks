@@ -20,15 +20,20 @@ train:
 
 experiments:
 	$(VENV_BIN)/python -m roar.eval.harness
+	$(VENV_BIN)/python -m roar.eval.scaling
+	$(VENV_BIN)/python -m roar.eval.scaling_lightgbm
+	$(VENV_BIN)/python -m roar.eval.adversarial_experiment
+	$(VENV_BIN)/python -m roar.eval.lambda_diagnosis_noisy
 
 figures:
 	$(VENV_BIN)/python -m roar.eval.figures
+	$(VENV_BIN)/python -m roar.eval.figures_improvement_phase
 
 test:
 	$(VENV_BIN)/pytest -q
 
 lint:
-	$(VENV_BIN)/ruff check roar tests
+	$(VENV_BIN)/ruff check roar tests demo
 
 api:
 	$(VENV_BIN)/uvicorn roar.api.app:app --reload

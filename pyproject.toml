@@ -20,7 +20,7 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-src = ["roar", "tests"]
+src = ["roar", "tests", "demo"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -25,6 +25,8 @@ statsmodels==0.14.2
 fastapi==0.111.0
 uvicorn==0.30.1
 streamlit==1.35.0
+httpx==0.28.1  # required by fastapi.testclient.TestClient (tests/test_api.py)
+pydeck==0.9.3  # map rendering in demo/app.py (also bundled with streamlit)
 
 # --- config / experiment plumbing ---
 pyyaml==6.0.1
