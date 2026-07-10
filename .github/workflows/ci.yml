@@ -24,7 +24,7 @@ jobs:
           pip install -e .
 
       - name: Lint (ruff)
-        run: ruff check roar tests
+        run: ruff check roar tests demo
 
       - name: Test (pytest)
         run: pytest -q
