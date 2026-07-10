@@ -1,0 +1,39 @@
+# `docker compose up` brings up the API + demo together.
+#
+# Prerequisite (real data/model, generated on the host first -- these are
+# gitignored, never baked into the image, and mounted in read-only here):
+#   make setup && make data && make train
+#
+# Then:
+#   docker compose up --build
+#   API:  http://localhost:8000/predictor/health
+#   Demo: http://localhost:8501
+
+services:
+  api:
+    build: .
+    command: uvicorn roar.api.app:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data:ro
+      - ./results:/app/results:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/predictor/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  demo:
+    build: .
+    command: streamlit run demo/app.py --server.address 0.0.0.0 --server.port 8501
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data:ro
+      - ./results:/app/results:ro
+    environment:
+      - ROAR_API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
