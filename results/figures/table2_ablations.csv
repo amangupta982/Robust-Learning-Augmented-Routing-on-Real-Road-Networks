@@ -1,0 +1,17 @@
+ablation,method,predictor_params,lambda_mode,lambda_base,n_seeds,mean,ci_low,ci_high,guard_invocation_rate
+ablation_guard,robust_astar,"{""budget"": 0.95}",fixed,1.0,5,1.1347851333386054,1.044390540085345,1.2416729802069413,0.0125
+ablation_guard,robust_astar,"{""seed"": 4004, ""sigma_level"": 1.0}",fixed,1.0,5,1.2291590709791453,1.034886493792881,1.4368452421032143,0.0725
+ablation_guard,robust_astar_no_guard,"{""budget"": 0.95}",fixed,1.0,5,1.1470328971992039,1.047832049912442,1.267244770967303,
+ablation_guard,robust_astar_no_guard,"{""seed"": 4004, ""sigma_level"": 1.0}",fixed,1.0,5,1.273914084013127,1.0736773016508856,1.4956382881727261,
+ablation_lambda_mode,robust_astar,"{""model_version"": ""latest""}",confidence_modulated,1.0,5,1.1416341214885528,1.0345355681955533,1.2974101491462633,0.0025
+ablation_lambda_mode,robust_astar,"{""model_version"": ""latest""}",fixed,1.0,5,1.1416460426577788,1.0345860113161927,1.2974220703154895,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,0.0,5,1.141899263747535,1.0349208049801528,1.2979059961190338,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,0.2,5,1.1416940087274896,1.0345102949400626,1.2974897388658275,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,0.4,5,1.1417066453552347,1.0345355681955533,1.2974826730129454,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,0.6,5,1.1417066453552347,1.0345355681955533,1.2974826730129454,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,0.8,5,1.1416341214885528,1.0345355681955533,1.2974101491462633,0.0025
+ablation_lambda_sweep,robust_astar,"{""model_version"": ""latest""}",fixed,1.0,5,1.1416460426577788,1.0345860113161927,1.2974220703154895,0.0025
+ablation_feature,pure_ml_astar,"{""excluded_features"": [""neighbor_congestion_proxy""]}",,,5,2.0651038561299115,1.5923813408236493,2.5921881787139442,
+ablation_feature,pure_ml_astar,"{""model_version"": ""latest""}",,,5,1.1427941163347086,1.0367105101545004,1.2988008487062075,
+ablation_feature,robust_astar,"{""excluded_features"": [""neighbor_congestion_proxy""]}",fixed,1.0,5,2.0600174882145943,1.5851784774272781,2.5900716832328903,0.0075
+ablation_feature,robust_astar,"{""model_version"": ""latest""}",fixed,1.0,5,1.1416460426577788,1.0345860113161927,1.2974220703154895,0.0025

@@ -1,0 +1,31 @@
+lambda_base,guard_invoked,condition
+0.0,0.0025,real LightGBM (Phase 6)
+0.2,0.0025,real LightGBM (Phase 6)
+0.4,0.0025,real LightGBM (Phase 6)
+0.6,0.0025,real LightGBM (Phase 6)
+0.8,0.0025,real LightGBM (Phase 6)
+1.0,0.0025,real LightGBM (Phase 6)
+0.0,0.1675,"adversary, B=1.0"
+0.2,0.1675,"adversary, B=1.0"
+0.4,0.1675,"adversary, B=1.0"
+0.6,0.1675,"adversary, B=1.0"
+0.8,0.1675,"adversary, B=1.0"
+1.0,0.17,"adversary, B=1.0"
+0.0,0.02,NoisyPredictor σ=0.5
+0.2,0.02,NoisyPredictor σ=0.5
+0.4,0.02,NoisyPredictor σ=0.5
+0.6,0.02,NoisyPredictor σ=0.5
+0.8,0.02,NoisyPredictor σ=0.5
+1.0,0.02,NoisyPredictor σ=0.5
+0.0,0.0375,NoisyPredictor σ=1.0
+0.2,0.0375,NoisyPredictor σ=1.0
+0.4,0.0375,NoisyPredictor σ=1.0
+0.6,0.0375,NoisyPredictor σ=1.0
+0.8,0.0375,NoisyPredictor σ=1.0
+1.0,0.0375,NoisyPredictor σ=1.0
+0.0,0.09,NoisyPredictor σ=2.0
+0.2,0.09,NoisyPredictor σ=2.0
+0.4,0.0875,NoisyPredictor σ=2.0
+0.6,0.0875,NoisyPredictor σ=2.0
+0.8,0.0825,NoisyPredictor σ=2.0
+1.0,0.085,NoisyPredictor σ=2.0
