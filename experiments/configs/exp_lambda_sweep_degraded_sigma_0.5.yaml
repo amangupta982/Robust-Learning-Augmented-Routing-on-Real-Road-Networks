@@ -1,0 +1,24 @@
+# Improvement Phase Task 3a: pre-registered hypothesis (stated here BEFORE
+# running -- see IMPROVEMENTS.md for the full pre-registration) --
+# the quality trade-off in lambda should emerge when the predictor is
+# degraded. Phase 6's ablation_lambda_sweep found a FLAT lambda curve
+# using the real (reasonably-calibrated) LightGBM predictor; this repeats
+# the exact same lambda_base sweep mechanism (unmodified from
+# roar/eval/harness.py) with NoisyPredictor at a fixed, clearly degraded
+# sigma_level instead, to test whether the flatness was specific to a
+# well-behaved predictor.
+
+experiment: lambda_sweep_degraded_sigma_0.5
+run_id: lambda_sweep_degraded_sigma_0.5
+seed: 8001
+
+alpha: 0.3
+lambda_mode: fixed
+predictor: {type: noisy, sigma_level: 0.5, seed: 8001}
+
+methods:
+  - robust_astar
+
+sweep:
+  param: lambda_base
+  values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]

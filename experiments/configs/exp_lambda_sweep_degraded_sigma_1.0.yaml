@@ -1,0 +1,17 @@
+# Improvement Phase Task 3a -- see exp_lambda_sweep_degraded_sigma_0.5.yaml
+# for the pre-registered hypothesis. Same mechanism, sigma_level=1.0.
+
+experiment: lambda_sweep_degraded_sigma_1.0
+run_id: lambda_sweep_degraded_sigma_1.0
+seed: 8002
+
+alpha: 0.3
+lambda_mode: fixed
+predictor: {type: noisy, sigma_level: 1.0, seed: 8002}
+
+methods:
+  - robust_astar
+
+sweep:
+  param: lambda_base
+  values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
